@@ -17,7 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"com.coderank.io.model","com.coderank.io.repository"})
+@EnableJpaRepositories(basePackages = {"thecrevance.model","thecrevance.repository"})
 public class DataConfig {
 
     @Value("${spring.datasource.username}")
@@ -63,7 +63,7 @@ public class DataConfig {
                 new LocalContainerEntityManagerFactoryBean();
         emfb.setDataSource(dataSource);
         emfb.setJpaVendorAdapter(jpaVendorAdapter);
-        emfb.setPackagesToScan("com.coderank.io.model", "com.coderank.io.repository");
+        emfb.setPackagesToScan("thecrevance.model", "thecrevance.repository");
         emfb.setJpaProperties(additionalProperties());
         return emfb;
     }
