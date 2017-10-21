@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User saveUser(UserDto userDto, RoleType roleType) {
         Optional<User> check = userRepository.getByEmailAndDeletedFalse(userDto.getEmail());
-        if(check.isPresent()){
+        if(check != null){
             throw new EntityAlreadyExistException(userDto.getEmail());
         }
         User user = userDtoMapper.toUser(userDto);
