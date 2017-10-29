@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User implements UserDetails{
+public class User {
     @Transient
     private LocalDateTime now = LocalDateTime.now();
 
@@ -172,46 +172,5 @@ public class User implements UserDetails{
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
 
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        Role role = getRole();
-        if (role != null) {
-            String roleName = "ROLE_" + role.getName();
-            authorities.add(new SimpleGrantedAuthority(roleName));
-        }
-        return authorities;
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public boolean isCredentialsNonExpired() {
-        return true;
     }
 }

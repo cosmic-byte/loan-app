@@ -1,30 +1,33 @@
 package thecrevance.security;
 
-import thecrevance.model.User;
-import thecrevance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import thecrevance.model.User;
+import thecrevance.repository.UserRepository;
 
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
-@Service
-@Transactional
-public class CustomUserDetailsService implements CustomUserService{
+@Service("customUserDetailsService")
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.getByEmailAndDeletedFalse(username);
-        optionalUser.ifPresent(this::reflectLogin);
-        throw new UsernameNotFoundException("User with  '" + username + "' email not found.");
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email)  {
+        User user = userRepository.getByEmailAndDeletedFalse(email);
+        if(user == null)
+            throw new NotAuthorizedException("User does not exist ");
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 
-    private User reflectLogin(User user) {
-        //user.setLastLogin(LocalDateTime.now());
-        return userRepository.saveAndFlush(user);
-    }
 }

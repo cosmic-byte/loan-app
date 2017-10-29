@@ -1,6 +1,6 @@
 package thecrevance.stubs;
 
-import thecrevance.dto.UserDto;
+import thecrevance.dto.PreUser;
 import thecrevance.enums.RoleType;
 import thecrevance.model.Role;
 import thecrevance.model.User;
@@ -18,8 +18,8 @@ public class TestStubs {
                 "Password", "email@email.com");
     }
 
-    public static UserDto generateUserDto(){
-        return new UserDto("Patrick", "Emmanuel",
+    public static PreUser generateUserDto(){
+        return new PreUser("Patrick", "Emmanuel",
                 "Password", "email@email.com");
     }
 

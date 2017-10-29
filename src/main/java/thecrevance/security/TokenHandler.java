@@ -1,111 +1,99 @@
 package thecrevance.security;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
-import thecrevance.model.User;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by emmanuel on 10/5/17.
+ */
+@Component
 public class TokenHandler {
 
-    private static final String HMAC_ALGO = "HmacSHA256";
-    private static final String SEPARATOR = ".";
-    private static final String SEPARATOR_SPLITTER = "\\.";
+    private final String SECRET = "wfgcompetence";
 
-    private final Mac hmac;
+    private final long EXPIRATION = 1000 * 60 * 60 * 24 * 10;//ten days
 
-    public TokenHandler(byte[] secretKey) {
+    private Claims getClaimsFromToken(String token) {
+        Claims claims;
         try {
-            hmac = Mac.getInstance(HMAC_ALGO);
-            hmac.init(new SecretKeySpec(secretKey, HMAC_ALGO));
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new IllegalStateException("failed to initialize HMAC: " + e.getMessage(), e);
+            claims = Jwts.parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            claims = null;
         }
+        return claims;
     }
 
-    public User parseUserFromToken(String token) {
-        final String[] parts = token.split(SEPARATOR_SPLITTER);
-        if (parts.length == 2 && parts[0].length() > 0 && parts[1].length() > 0) {
-            try {
-                final byte[] userBytes = fromBase64(parts[0]);
-                final byte[] hash = fromBase64(parts[1]);
-
-                boolean validHash = Arrays.equals(createHmac(userBytes), hash);
-                if (validHash) {
-                    final User user = fromJSON(userBytes);
-                    if (new Date().getTime() <  user.getExpires()) {
-                        return user;
-                    }
-                }
-            } catch (IllegalArgumentException e) {
-                //log tempering attempt here
-            }
-        }
-        return null;
-    }
-
-    public String createTokenForUser(User user) {
-        byte[] userBytes = toJSON(user);
-        byte[] hash = createHmac(userBytes);
-        final StringBuilder sb = new StringBuilder(170);
-        sb.append(toBase64(userBytes));
-        sb.append(SEPARATOR);
-        sb.append(toBase64(hash));
-        return sb.toString();
-    }
-
-    public ObjectMapper jsonObjectMapper() {
-        return Jackson2ObjectMapperBuilder.json()
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .modules(new JSR310Module())
-                .build();
-    }
-
-    private User fromJSON(final byte[] userBytes) {
+    public String getUsernameFromToken(String token) {
+        String username;
         try {
-            ObjectMapper objectMapper = jsonObjectMapper();
-            return objectMapper.readValue(new ByteArrayInputStream(userBytes), User.class);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+            final Claims claims = getClaimsFromToken(token);
+            username = claims.get("username", String.class);
+        } catch (Exception e) {
+            username = null;
         }
+        return username;
     }
 
-    private byte[] toJSON(User user) {
+    public Date getExpirationDateFromToken(String token) {
+        Date expiration;
         try {
-            ObjectMapper objectMapper = jsonObjectMapper();
-            return objectMapper.writeValueAsBytes(user);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
+            final Claims claims = getClaimsFromToken(token);
+            expiration = claims.getExpiration();
+        } catch (Exception e) {
+            expiration = null;
         }
+        return expiration;
     }
 
-    private String toBase64(byte[] content) {
-        return DatatypeConverter.printBase64Binary(content).replace('+', '-').replace('/', '_').replaceAll("=", "");
+
+    private Date generateCurrentDate() {
+        return new Date(System.currentTimeMillis());
     }
 
-    private byte[] fromBase64(String urlsafeBase64) {
-        urlsafeBase64 = urlsafeBase64.replace('-', '+').replace('_', '/');
-        final int rest = urlsafeBase64.length() % 4;
-        if (rest != 0) {
-            urlsafeBase64 += rest == 3 ? "=" : "==";
-        }
-        return DatatypeConverter.parseBase64Binary(urlsafeBase64);
+    private Date generateExpirationDate() {
+        return new Date(System.currentTimeMillis() + EXPIRATION * 1000);
     }
 
-    // synchronized to guard internal hmac object
-    private synchronized byte[] createHmac(byte[] content) {
-        return hmac.doFinal(content);
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", userDetails.getUsername());
+        //claims.put("device", generateDevice(device));
+        return generateClaims(claims);
+    }
+
+    public String generateClaims(Map<String, Object> claims) {
+        JwtBuilder jwtBuilder = Jwts.builder();
+        jwtBuilder.setClaims(claims);
+        jwtBuilder.setIssuedAt(generateCurrentDate());
+        jwtBuilder.setExpiration(generateExpirationDate());
+        jwtBuilder.signWith(SignatureAlgorithm.HS512, SECRET);
+        return jwtBuilder.compact();
+    }
+
+    public Boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+        return (
+                username.equals(userDetails.getUsername())
+                        && !isTokenExpired(token)
+
+        );
     }
 }

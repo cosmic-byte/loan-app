@@ -72,9 +72,9 @@ public class UserRepositoryTest {
     public void getByEmailAndDeletedFalseShouldReturnUser() throws Exception {
         entityManager.persistAndFlush(userToSave);
 
-        Optional<User> user = userRepository.getByEmailAndDeletedFalse("email@email.com");
+        User user = userRepository.getByEmailAndDeletedFalse("email@email.com");
 
-        assertThat(user.isPresent()).isTrue();
+        assertThat(user != null).isTrue();
     }
 
     @Test
@@ -82,8 +82,8 @@ public class UserRepositoryTest {
         userToSave.setDeleted(true);
         entityManager.persistAndFlush(userToSave);
 
-        Optional<User> user = userRepository.getByEmailAndDeletedFalse("email@email.com");
+        User user = userRepository.getByEmailAndDeletedFalse("email@email.com");
 
-        assertThat(user.isPresent()).isFalse();
+        assertThat(user != null).isFalse();
     }
 }
