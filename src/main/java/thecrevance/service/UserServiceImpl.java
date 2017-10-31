@@ -16,6 +16,7 @@ import thecrevance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,6 +68,23 @@ public class UserServiceImpl implements UserService{
     public User changeRole(Long userId, RoleType roleType){
         User user = userRepository.findOne(userId);
         return this.setUserRole(user,roleType);
+    }
+
+    @Override
+    public UserDto getUserById(Long id){
+        User user = this.userRepository.findOne(id);
+        return this.userDtoMapper.toUserDto(user);
+    }
+
+    @Override
+    public void deleteUser(Long userId){
+        User user = this.userRepository.findOne(userId);
+        if(user == null){
+            throw new EntityNotFoundException("No user with Id = "+userId+" was found");
+        }else{
+            user.setDeleted(true);
+            userRepository.save(user);
+        }
     }
 
     private void encodeAndSetUserPassword(User user){

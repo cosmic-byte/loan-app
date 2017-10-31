@@ -39,10 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers("/v1/users/register").permitAll()
-                .antMatchers(HttpMethod.GET,"/v1/users/*/makeAdmin").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/users").hasAuthority("ADMIN")
-                .antMatchers("/v1/users/*").authenticated()
+                .antMatchers(HttpMethod.GET,"/v1/users/*").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET,"/v1/users/*/makeAdmin").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/v1/users/*/delete").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(authenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);

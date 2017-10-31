@@ -19,13 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private UserService userService;
-    private TokenAuthenticationService tokenAuthenticationService;
 
     @Autowired
     public UserController(UserService userService,
                           TokenAuthenticationService tokenAuthenticationService) {
         this.userService = userService;
-        this.tokenAuthenticationService = tokenAuthenticationService;
     }
 
     @RequestMapping(value = "/register", method= RequestMethod.POST)
@@ -39,6 +37,17 @@ public class UserController {
                                                         Integer pageNumber) {
         PageRequest pageRequest = new PageRequest(pageNumber-1, 10);
         return this.userService.getAllUsers(pageRequest);
+    }
+
+    @RequestMapping(value = "/{userId}", method= RequestMethod.GET)
+    public UserDto getUserById(@PathVariable final Long userId) {
+        return this.userService.getUserById(userId);
+    }
+
+    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
+        this.userService.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(path = "/{userId}/makeAdmin")

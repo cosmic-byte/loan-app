@@ -17,4 +17,8 @@ public interface UserService {
     PageData<UserDto> getAllUsers(Pageable pageable);
 
     User changeRole(Long userId, RoleType roleType);
+
+    UserDto getUserById(Long id);
+
+    void deleteUser(Long userId);
 }
