@@ -1,6 +1,6 @@
 package thecrevance.mocks;
 
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.mapper.UserDtoMapper;
 import thecrevance.stubs.TestStubs;
 

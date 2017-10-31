@@ -1,4 +1,4 @@
-package thecrevance.dto;
+package thecrevance.model;
 
 import org.hibernate.validator.constraints.Email;
 import org.springframework.data.elasticsearch.annotations.Document;

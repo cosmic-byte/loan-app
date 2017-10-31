@@ -3,7 +3,7 @@ package thecrevance.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import thecrevance.mocks.EnvironmentMocks;
 import thecrevance.mocks.MapperMocks;
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.enums.RoleType;
 import thecrevance.mapper.UserDtoMapper;
 import thecrevance.mocks.RoleMocks;

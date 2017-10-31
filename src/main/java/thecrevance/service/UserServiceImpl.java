@@ -7,7 +7,7 @@ import thecrevance.dto.PageData;
 import thecrevance.dto.UserDto;
 import thecrevance.exceptions.EntityAlreadyExistException;
 import thecrevance.model.Role;
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.enums.RoleType;
 import thecrevance.mapper.UserDtoMapper;
 import thecrevance.model.User;

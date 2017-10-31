@@ -2,7 +2,7 @@ package thecrevance.controller;
 
 import org.springframework.data.domain.PageRequest;
 import thecrevance.dto.PageData;
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.dto.UserDto;
 import thecrevance.enums.RoleType;
 import thecrevance.security.TokenAuthenticationService;

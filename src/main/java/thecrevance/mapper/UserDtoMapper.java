@@ -1,6 +1,6 @@
 package thecrevance.mapper;
 
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.dto.UserDto;
 import thecrevance.model.User;
 import org.modelmapper.ModelMapper;

@@ -2,21 +2,18 @@ package thecrevance.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Email;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = -4515291880483274385L;
+
     @Transient
     private LocalDateTime now = LocalDateTime.now();
 
@@ -33,6 +30,12 @@ public class User {
     private LocalDateTime createdAt = now;
     private LocalDateTime modifiedAt = now;
     private boolean deleted = false;
+
+    @Embedded
+    private PersonalInfo personalInfo;
+
+    @Embedded
+    private UserBankDetails userBankDetails;
 
     public User(String firstname, String lastname, String password, String email, Role role) {
         this.firstname = firstname;
@@ -51,6 +54,19 @@ public class User {
 
     public User() {
     }
+
+    @Transient
+    @JsonIgnore
+    public boolean isPersonalInfoUpdated(){
+        return personalInfo != null ;
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean isBankDetailsUpdated(){
+        return userBankDetails != null;
+    }
+
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -172,5 +188,21 @@ public class User {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
 
+    }
+
+    public PersonalInfo getPersonalInfo() {
+        return personalInfo;
+    }
+
+    public void setPersonalInfo(PersonalInfo personalInfo) {
+        this.personalInfo = personalInfo;
+    }
+
+    public UserBankDetails getUserBankDetails() {
+        return userBankDetails;
+    }
+
+    public void setUserBankDetails(UserBankDetails userBankDetails) {
+        this.userBankDetails = userBankDetails;
     }
 }

@@ -2,7 +2,7 @@ package thecrevance.service;
 
 import org.springframework.data.domain.Pageable;
 import thecrevance.dto.PageData;
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.dto.UserDto;
 import thecrevance.enums.RoleType;
 import thecrevance.model.User;

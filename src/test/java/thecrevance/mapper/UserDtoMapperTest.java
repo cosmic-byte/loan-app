@@ -1,6 +1,6 @@
 package thecrevance.mapper;
 
-import thecrevance.dto.PreUser;
+import thecrevance.model.PreUser;
 import thecrevance.model.User;
 import thecrevance.stubs.TestStubs;
 import org.junit.Before;
