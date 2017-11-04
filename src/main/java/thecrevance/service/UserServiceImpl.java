@@ -1,6 +1,7 @@
 package thecrevance.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import thecrevance.dto.PageData;
@@ -58,9 +59,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public PageData<UserDto> getAllUsers(Pageable pageable){
-        List<User> users = this.userRepository.findByDeletedFalseOrderByFirstnameAsc();
-        List<UserDto> userDtos = users.stream().map(x -> userDtoMapper.toUserDto(x)).collect(Collectors.toList());
-        Page<UserDto> page = PageData.getPageFromList(userDtos,pageable);
+        Page<User> users = this.userRepository.findByDeletedFalseOrderByFirstnameAsc(pageable);
+        List<UserDto> userDtos = users.getContent().stream().map(x -> userDtoMapper.toUserDto(x)).collect(Collectors.toList());
+        Page<UserDto> page = new PageImpl(userDtos,pageable,users.getTotalElements());
         return PageData.getDataFromPage(page);
     }
 

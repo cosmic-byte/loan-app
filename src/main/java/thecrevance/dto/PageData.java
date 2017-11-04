@@ -15,6 +15,7 @@ public class PageData<T> {
     private int currentNumber;
     private int beginIndex;
     private int endIndex;
+    private Long total;
 
     public List<T> getContent() {
         return content;
@@ -48,11 +49,12 @@ public class PageData<T> {
         this.endIndex = endIndex;
     }
 
-    public PageData(List<T> content, int currentNumber, int beginIndex, int endIndex) {
+    public PageData(List<T> content, int currentNumber, int beginIndex, int endIndex, Long total) {
         this.content = content;
         this.currentNumber = currentNumber;
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
+        this.total = total;
     }
 
     public static <T> PageData<T> getDataFromPage(Page<T> page) {
@@ -60,14 +62,22 @@ public class PageData<T> {
         int beginIndex = Math.max(1, currentIndex - 5);
         int endIndex = Math.min(beginIndex + 10, page.getTotalPages());
         endIndex = Math.max(1, endIndex);
-        return new PageData<>(page.getContent(), currentIndex, beginIndex, endIndex);
+        return new PageData<>(page.getContent(), currentIndex, beginIndex, endIndex, page.getTotalElements());
     }
 
-    public static <T> Page<T> getPageFromList(List<T> list, Pageable pageRequest) {
+    public static <T> Page<T> getPageFromList(List<T> list, Pageable pageRequest,Long total) {
         int x = pageRequest.getPageNumber() * pageRequest.getPageSize();
         int y = Math.min(x+pageRequest.getPageSize(),list.size());
         List<T> subList = x < list.size() && !list.isEmpty()?
                 list.subList(x,y) : new ArrayList<>();
-        return new PageImpl(subList,pageRequest,list.size());
+        return new PageImpl(subList,pageRequest,total);
+    }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
     }
 }

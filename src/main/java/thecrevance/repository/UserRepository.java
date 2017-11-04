@@ -1,5 +1,7 @@
 package thecrevance.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import thecrevance.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,5 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     User getByEmailAndDeletedFalse(String username);
 
-    List<User> findByDeletedFalseOrderByFirstnameAsc();
+    Page<User> findByDeletedFalseOrderByFirstnameAsc(Pageable pageable);
 }

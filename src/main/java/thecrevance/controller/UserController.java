@@ -33,9 +33,9 @@ public class UserController {
     }
 
     @RequestMapping(method= RequestMethod.GET)
-    public PageData<UserDto> getAllRegisteredUsers(@RequestParam(value = "pageNumber", defaultValue = "1")
-                                                        Integer pageNumber) {
-        PageRequest pageRequest = new PageRequest(pageNumber-1, 10);
+    public PageData<UserDto> getAllRegisteredUsers(@RequestParam(value = "pageNumber", defaultValue = "1")Integer pageNumber,
+                                                   @RequestParam(value = "pageSize", defaultValue = "10")Integer pageSize) {
+        PageRequest pageRequest = new PageRequest(pageNumber-1, pageSize);
         return this.userService.getAllUsers(pageRequest);
     }
 
