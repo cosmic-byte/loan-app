@@ -7,11 +7,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import thecrevance.dto.PageData;
 import thecrevance.dto.UserDto;
 import thecrevance.exceptions.EntityAlreadyExistException;
-import thecrevance.model.Role;
-import thecrevance.model.PreUser;
+import thecrevance.exceptions.UserNotInDBException;
+import thecrevance.model.*;
 import thecrevance.enums.RoleType;
 import thecrevance.mapper.UserDtoMapper;
-import thecrevance.model.User;
 import thecrevance.repository.RoleRepository;
 import thecrevance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,9 +71,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto getUserById(Long id){
-        User user = this.userRepository.findOne(id);
-        return this.userDtoMapper.toUserDto(user);
+    public User getUserById(Long id){
+        return this.userRepository.findOne(id);
     }
 
     @Override
@@ -86,6 +84,26 @@ public class UserServiceImpl implements UserService{
             user.setDeleted(true);
             userRepository.save(user);
         }
+    }
+
+    @Override
+    public User updatePersonalInfo(String email, PersonalInfo personalInfo) throws UserNotInDBException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotInDBException("User with email address could not be found in db");
+        }
+        user.setPersonalInfo(personalInfo);
+        return userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public User updateBankDetails(String email, UserBankDetails userBankDetails) throws UserNotInDBException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotInDBException("User with email address could not be found in db");
+        }
+        user.setUserBankDetails(userBankDetails);
+        return userRepository.saveAndFlush(user);
     }
 
     private void encodeAndSetUserPassword(User user){

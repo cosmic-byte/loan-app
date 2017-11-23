@@ -1,10 +1,14 @@
 package thecrevance.controller;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import thecrevance.dto.PageData;
+import thecrevance.model.PersonalInfo;
 import thecrevance.model.PreUser;
 import thecrevance.dto.UserDto;
 import thecrevance.enums.RoleType;
+import thecrevance.model.UserBankDetails;
 import thecrevance.security.TokenAuthenticationService;
 import thecrevance.service.UserService;
 import thecrevance.model.User;
@@ -12,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import thecrevance.utils.UserUtils;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -40,7 +47,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{userId}", method= RequestMethod.GET)
-    public UserDto getUserById(@PathVariable final Long userId) {
+    public User getUserById(@PathVariable final Long userId) {
         return this.userService.getUserById(userId);
     }
 
@@ -48,6 +55,22 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
         this.userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping(method = RequestMethod.PUT, path="/update-info")
+    public ResponseEntity<?> updatePersonalInfo(@Valid @RequestBody PersonalInfo info) throws Exception {
+        UserDetails user = UserUtils.getLoggedInUser();
+        user = userService.updatePersonalInfo(user.getUsername(), info);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping(method = RequestMethod.PUT, path="/bank-details")
+    public ResponseEntity<?> updateBankDetails(@Valid @RequestBody UserBankDetails bank) throws Exception {
+        UserDetails user = UserUtils.getLoggedInUser();
+        user = userService.updateBankDetails(user.getUsername(), bank);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{userId}/makeAdmin")

@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
     User getByEmailAndDeletedFalse(String username);
 
     Page<User> findByDeletedFalseOrderByFirstnameAsc(Pageable pageable);
+
+    User findByEmail(String email);
 }

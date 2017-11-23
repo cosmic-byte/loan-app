@@ -34,6 +34,10 @@ public class PersonalInfo implements Serializable{
     private Sex sex;
 
     @NotNull
+    @Column(name = "marital_status")
+    private String maritalStatus;
+
+    @NotNull
     @Column(name = "address")
     private String address;
 
@@ -93,5 +97,13 @@ public class PersonalInfo implements Serializable{
         this.sex = sex;
         this.address = address;
 
+    }
+
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
     }
 }
