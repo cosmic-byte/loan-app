@@ -1,7 +1,7 @@
 package thecrevance.elasticrepo;
 
-import thecrevance.dto.UserDto;
+import thecrevance.model.PreUser;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface UserRepositoryES extends ElasticsearchRepository<UserDto, Long> {
+public interface UserRepositoryES extends ElasticsearchRepository<PreUser, Long> {
 }

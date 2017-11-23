@@ -1,8 +1,9 @@
 package thecrevance.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import thecrevance.mocks.EnvironmentMocks;
 import thecrevance.mocks.MapperMocks;
-import thecrevance.dto.UserDto;
+import thecrevance.model.PreUser;
 import thecrevance.enums.RoleType;
 import thecrevance.mapper.UserDtoMapper;
 import thecrevance.mocks.RoleMocks;
@@ -32,6 +33,9 @@ public class UserServiceImplTest {
     private UserRepository userRepository;
     @MockBean
     private UserDtoMapper userDtoMapper;
+    @MockBean
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     //system under test.
     private UserService userService;
@@ -42,19 +46,21 @@ public class UserServiceImplTest {
     private UserMocks userMocks = new UserMocks();
     private EnvironmentMocks environmentMocks = new EnvironmentMocks();
 
+    public UserServiceImplTest() {
+    }
+
     @Before
     public void setUp() throws Exception {
         mapperMocks.initMocks(userDtoMapper);
-        environmentMocks.initMocks(environment);
         roleMocks.initMocks(roleRepository);
         userMocks.initMocks(userRepository);
-        userService = new UserServiceImpl(environment, roleRepository, userRepository, userDtoMapper);
+        userService = new UserServiceImpl(roleRepository, userRepository, userDtoMapper,bCryptPasswordEncoder);
     }
 
     @Test
     public void saveUserShouldSave() throws Exception {
-        UserDto userDto = TestStubs.generateUserDto();
-        User user = userService.saveUser(userDto, RoleType.USER);
+        PreUser preUser = TestStubs.generateUserDto();
+        User user = userService.saveUser(preUser, RoleType.USER);
 
         assertThat(user).isNotNull();
     }

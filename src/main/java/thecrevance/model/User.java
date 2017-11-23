@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,9 @@ import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User implements UserDetails{
+public class User implements UserDetails {
+    private static final long serialVersionUID = -4515291880483274385L;
+
     @Transient
     private LocalDateTime now = LocalDateTime.now();
 
@@ -34,6 +37,12 @@ public class User implements UserDetails{
     private LocalDateTime modifiedAt = now;
     private boolean deleted = false;
 
+    @Embedded
+    private PersonalInfo personalInfo;
+
+    @Embedded
+    private UserBankDetails userBankDetails;
+
     public User(String firstname, String lastname, String password, String email, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -49,8 +58,28 @@ public class User implements UserDetails{
         this.email = email;
     }
 
+    public User(User user) {
+        this.firstname = user.firstname;
+        this.lastname = user.lastname;
+        this.password = user.password;
+        this.email = user.email;
+    }
+
     public User() {
     }
+
+    @Transient
+    @JsonIgnore
+    public boolean isPersonalInfoUpdated(){
+        return personalInfo != null ;
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean isBankDetailsUpdated(){
+        return userBankDetails != null;
+    }
+
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -174,44 +203,62 @@ public class User implements UserDetails{
 
     }
 
+    @Transient
     @Override
     @JsonIgnore
-    @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        Role role = getRole();
         if (role != null) {
-            String roleName = "ROLE_" + role.getName();
+            String roleName = role.getName();
+            if (!roleName.startsWith("ROLE_")) {
+                roleName = "ROLE_" + roleName;
+            }
             authorities.add(new SimpleGrantedAuthority(roleName));
         }
         return authorities;
     }
 
+    @Transient
     @Override
     @JsonIgnore
-    @Transient
     public String getUsername() {
         return email;
     }
 
+    @Transient
     @Override
     @JsonIgnore
-    @Transient
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @Transient
     @Override
     @JsonIgnore
-    @Transient
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @Transient
     @Override
     @JsonIgnore
-    @Transient
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public PersonalInfo getPersonalInfo() {
+        return personalInfo;
+    }
+
+    public void setPersonalInfo(PersonalInfo personalInfo) {
+        this.personalInfo = personalInfo;
+    }
+
+    public UserBankDetails getUserBankDetails() {
+        return userBankDetails;
+    }
+
+    public void setUserBankDetails(UserBankDetails userBankDetails) {
+        this.userBankDetails = userBankDetails;
     }
 }

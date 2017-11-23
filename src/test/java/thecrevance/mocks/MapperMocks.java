@@ -1,6 +1,6 @@
 package thecrevance.mocks;
 
-import thecrevance.dto.UserDto;
+import thecrevance.model.PreUser;
 import thecrevance.mapper.UserDtoMapper;
 import thecrevance.stubs.TestStubs;
 
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 public class MapperMocks {
 
     public void initMocks(UserDtoMapper userDtoMapper){
-        when(userDtoMapper.toUser(any(UserDto.class))).thenReturn(TestStubs.generateUser());
+        when(userDtoMapper.toUser(any(PreUser.class))).thenReturn(TestStubs.generateUser());
     }
 
 }

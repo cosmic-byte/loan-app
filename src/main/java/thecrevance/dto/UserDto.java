@@ -1,35 +1,27 @@
 package thecrevance.dto;
 
-import org.hibernate.validator.constraints.Email;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-
-@Document(indexName = "crevance-index", type = "user")
 public class UserDto {
 
-
-    @Id
     private Long id;
 
-    @NotNull
-    @Size(min=2, max=30, message="The length lastname should be within the range of 2 to 30.")
     private String firstname;
 
-    @NotNull
-    @Size(min=2, max=30, message="The length of password should be within the range of 2 to 30.")
     private String lastname;
 
-    @NotNull
-    @Email(message = "Email is not valid.")
     private String email;
 
-    @NotNull
-    @Size(min=2, max=30, message="The length of password should be within the range of 2 to 30.")
-    private String password;
+    private String roleName;
+
+    public UserDto() {
+    }
+
+    public UserDto(Long id, String firstname, String lastname, String email, String roleName) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.roleName = roleName;
+    }
 
     public String getFirstname() {
         return firstname;
@@ -55,22 +47,12 @@ public class UserDto {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public UserDto() {
-    }
-
-    public UserDto(String firstname, String lastname, String email, String password) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public Long getId() {

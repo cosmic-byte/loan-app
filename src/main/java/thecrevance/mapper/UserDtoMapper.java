@@ -1,5 +1,6 @@
 package thecrevance.mapper;
 
+import thecrevance.model.PreUser;
 import thecrevance.dto.UserDto;
 import thecrevance.model.User;
 import org.modelmapper.ModelMapper;
@@ -13,13 +14,17 @@ public class UserDtoMapper {
         this.modelMapper = modelMapper;
     }
 
-    public UserDto toUserDto(User user) {
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        return userDto;
+    public PreUser toPreUser(User user) {
+        PreUser preUser = modelMapper.map(user, PreUser.class);
+        return preUser;
     }
 
-    public User toUser(UserDto userDto) {
-        User user = modelMapper.map(userDto, User.class);
+    public User toUser(PreUser preUser) {
+        User user = modelMapper.map(preUser, User.class);
         return user;
+    }
+
+    public UserDto toUserDto(User user) {
+        return modelMapper.map(user, UserDto.class);
     }
 }

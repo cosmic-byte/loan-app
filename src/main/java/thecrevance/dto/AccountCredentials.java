@@ -1,8 +1,21 @@
-package thecrevance.security;
+package thecrevance.dto;
+
+import javax.validation.constraints.NotNull;
 
 public class AccountCredentials {
+
+    @NotNull
     private String email;
+    @NotNull
     private String password;
+
+    public AccountCredentials() {
+    }
+
+    public AccountCredentials(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
     public String getEmail() {
         return email;
@@ -17,13 +30,6 @@ public class AccountCredentials {
     }
 
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public AccountCredentials() {}
-
-    public AccountCredentials(String email, String password) {
-        this.email = email;
         this.password = password;
     }
 }
