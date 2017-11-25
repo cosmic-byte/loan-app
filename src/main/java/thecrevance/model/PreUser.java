@@ -1,18 +1,12 @@
 package thecrevance.model;
 
 import org.hibernate.validator.constraints.Email;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 
-@Document(indexName = "crevance-index", type = "user")
 public class PreUser {
 
-
-    @Id
     private Long id;
 
     @NotNull
