@@ -22,7 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email)  {
-        System.out.println("**************email passed: "+email);
         User user = userRepository.getByEmailAndDeletedFalse(email);
         if(user == null)
             throw new NotAuthorizedException("User does not exist ");
